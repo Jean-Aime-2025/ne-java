@@ -31,9 +31,11 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
             "/configuration/ui",
             "/configuration/security",
-            "/swagger-ui/**",
             "/webjars/**",
             "/actuator/**",
             "/api/employees/register",
@@ -62,11 +64,29 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
-                        .requestMatchers("/api/employees/**").hasRole("ADMIN") // all other methods (POST, PUT, DELETE)
+
+                        // EMPLOYEE - Can view their details and payslips
+                        .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+                        .requestMatchers("/api/payslips/me").hasRole("EMPLOYEE")
+
+                        // MANAGER - Add employee, generate payroll, view all payslips
+                        .requestMatchers(HttpMethod.POST, "/api/employees/register").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/payslips/generate").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/payslips").hasRole("MANAGER")
+
+                        // ADMIN - Approve payroll
+                        .requestMatchers(HttpMethod.POST, "/api/payroll/approve").hasRole("ADMIN")
+
+                        // MANAGER or ADMIN - Can manage deductions, employments
+                        .requestMatchers("/api/deductions/**").hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers("/api/employments/**").hasAnyRole("MANAGER", "ADMIN")
+
+                        // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
+
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(securityExceptionHandler)
                 )

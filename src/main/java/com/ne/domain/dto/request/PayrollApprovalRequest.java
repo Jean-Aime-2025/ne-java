@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record PayrollApprovalRequest(
         @Min(1) @Max(12) int month,
-        @Min(2020) int year,
+        @Min(2000) int year,
         @NotBlank String institutionName
 ) {}

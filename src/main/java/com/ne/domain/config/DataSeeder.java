@@ -18,7 +18,7 @@ public class DataSeeder {
 
     @PostConstruct
     public void seedUsers() {
-        createIfNotExists("admin@ne.com", "Admin", "User", "admin123", Set.of(Role.ADMIN));
+            createIfNotExists("admin@ne.com", "Admin", "User", "admin123", Set.of(Role.ADMIN));
         createIfNotExists("manager@ne.com", "Manager", "User", "manager123", Set.of(Role.MANAGER));
         createIfNotExists("employee@ne.com", "Employee", "User", "employee123", Set.of(Role.EMPLOYEE));
     }

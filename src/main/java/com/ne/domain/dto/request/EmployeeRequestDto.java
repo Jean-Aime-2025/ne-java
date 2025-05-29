@@ -3,6 +3,7 @@ package com.ne.domain.dto.request;
 
 import com.ne.domain.enums.EmployeeStatus;
 import com.ne.domain.enums.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class EmployeeRequestDto {
     private String password;
 
     @Builder.Default
+    @Schema(hidden = true)
     private Set<Role> roles = Set.of(Role.EMPLOYEE);
 
     private String mobile;
@@ -38,5 +40,6 @@ public class EmployeeRequestDto {
     @NotNull
     private LocalDate dateOfBirth;
 
+    @Schema(hidden = true)
     private EmployeeStatus status;
 }
